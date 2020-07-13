@@ -1,0 +1,27 @@
+<script src="https://js.stripe.com/v3"></script>
+
+<script>
+    (function() {
+        var stripe = Stripe('%APIKEY%');
+
+        document.addEventListener('click', function (event) {
+            var target = event.target;
+            var id = target.getAttribute('data-buybutton-id');
+
+            if (id) {
+                stripe.redirectToCheckout({
+                    lineItems: [{price: id, quantity: 1}],
+                    mode: 'payment',
+                    successUrl: ("" + window.location).replace(/\/?$/, '-thanks/'),
+                    cancelUrl: ("" + window.location)
+                })
+                    .then(function (result) {
+                        var errorElement = target.nextSibling;
+                        if (errorElement && /\bbuybutton-error\b/.test(errorElement.className)) {
+                            errorElement.textContent = result.error ? result.error.message : '';
+                        }
+                    });
+            }
+        });
+    })();
+</script>
